@@ -10,36 +10,71 @@
       ref="tags"
       :style="{ 'max-width': inputWidth - 32 + 'px', width: '100%' }">
       <span v-if="collapseTags && selected.length">
+        <el-tooltip v-if="selected[0].currentLabel.length > 10" effect="light" :content="selected[0].currentLabel" placement="top">
+          <el-tag
+            :closable="!selectDisabled"
+            :size="collapseTagSize"
+            :hit="selected[0].hitState"
+            type="info"
+            @close="deleteTag($event, selected[0])"
+            disable-transitions>
+            <span class="el-select__tags-text">{{ selected[0].currentLabel.substring(0, 10) + '...' }}</span>
+          </el-tag>
+        </el-tooltip>
         <el-tag
+          v-else
           :closable="!selectDisabled"
           :size="collapseTagSize"
           :hit="selected[0].hitState"
           type="info"
           @close="deleteTag($event, selected[0])"
           disable-transitions>
-          <span class="el-select__tags-text">{{ selected[0].currentLabel }}</span>
+          <span class="el-select__tags-text">{{ selected[0].currentLabel.substring(0, 10) + '...' }}</span>
         </el-tag>
-        <el-tag
-          v-if="selected.length > 1"
-          :closable="false"
-          :size="collapseTagSize"
-          type="info"
-          disable-transitions>
-          <span class="el-select__tags-text">+ {{ selected.length - 1 }}</span>
-        </el-tag>
+        <span v-if="selected.length > 1">
+          <el-tooltip v-if="(selected.length - 1).length > 10" effect="light" :content="selected.length - 1" placement="top">
+            <el-tag
+              :closable="false"
+              :size="collapseTagSize"
+              type="info"
+              disable-transitions>
+              <span class="el-select__tags-text">{{ (selected.length - 1).substring(0, 10) + '...' }}</span>
+            </el-tag>
+          </el-tooltip>
+          <el-tag
+            v-else
+            :closable="false"
+            :size="collapseTagSize"
+            type="info"
+            disable-transitions>
+            <span class="el-select__tags-text">+ {{ selected.length - 1 }}</span>
+          </el-tag>
+        </span>
       </span>
       <transition-group @after-leave="resetInputHeight" v-if="!collapseTags">
-        <el-tag
-          v-for="item in selected"
-          :key="getValueKey(item)"
-          :closable="!selectDisabled"
-          :size="collapseTagSize"
-          :hit="item.hitState"
-          type="info"
-          @close="deleteTag($event, item)"
-          disable-transitions>
-          <span class="el-select__tags-text">{{ item.currentLabel }}</span>
-        </el-tag>
+        <span v-for="item in selected" :key="getValueKey(item)">
+           <el-tooltip v-if="item.currentLabel.length > 10" effect="light" :content="item.currentLabel" placement="top">
+            <el-tag
+              :closable="!selectDisabled"
+              :size="collapseTagSize"
+              :hit="item.hitState"
+              type="info"
+              @close="deleteTag($event, item)"
+              disable-transitions>
+              <span class="el-select__tags-text">{{ item.currentLabel.substring(0,10) + '...' }}</span>
+            </el-tag>
+           </el-tooltip>
+           <el-tag
+              v-else
+              :closable="!selectDisabled"
+              :size="collapseTagSize"
+              :hit="item.hitState"
+              type="info"
+              @close="deleteTag($event, item)"
+              disable-transitions>
+              <span class="el-select__tags-text">{{ item.currentLabel }}</span>
+            </el-tag>
+        </span>
       </transition-group>
 
       <input
@@ -141,6 +176,7 @@
   import ElSelectMenu from './select-dropdown.vue';
   import ElOption from './option.vue';
   import ElTag from 'element-ui/packages/tag';
+  import Tooltip from 'element-ui/packages/tooltip';
   import ElScrollbar from 'element-ui/packages/scrollbar';
   import debounce from 'throttle-debounce/debounce';
   import Clickoutside from 'element-ui/src/utils/clickoutside';
@@ -243,6 +279,7 @@
       ElSelectMenu,
       ElOption,
       ElTag,
+      Tooltip,
       ElScrollbar
     },
 
